@@ -1,971 +1,180 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-<!-- Source derived from NutriMeal project files[cite: 1] -->
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NutriMeal - Meal Planner App</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tailwind Configuration -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          },
-          colors: {
-            emerald: {
-              50: '#ecfdf5',
-              100: '#d1fae5',
-              200: '#a7f3d0',
-              300: '#6ee7b7',
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-              900: '#064e3b',
-              950: '#022c22',
-            },
-            slate: {
-              50: '#f8fafc',
-              100: '#f1f5f9',
-              200: '#e2e8f0',
-              300: '#cbd5e1',
-              400: '#94a3b8',
-              500: '#64748b',
-              600: '#475569',
-              700: '#334155',
-              800: '#1e293b',
-              900: '#0f172a',
-              950: '#020617',
-            }
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriMeal - Smart AI Meal Planning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
         }
-      }
-    }
-  </script>
-  <!-- Custom Styles from index.css[cite: 1] -->
-  <style>
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    @keyframes spinSlow {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    @keyframes bounceSlow {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-6px);
-      }
-    }
-    .animate-fade-in {
-      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .animate-spin-slow {
-      animation: spinSlow 12s linear infinite;
-    }
-    .animate-bounce-slow {
-      animation: bounceSlow 4s ease-in-out infinite;
-    }
-    .scrollbar-none::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollbar-none {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    body {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    /* Modal active class */
-    body.modal-open {
-      overflow: hidden;
-    }
-    #play-store-modal {
-      display: none;
-    }
-    #play-store-modal.active {
-      display: flex;
-    }
-  </style>
+    </style>
 </head>
-<!-- App Root from App.tsx[cite: 1] -->
-<body class="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950 relative">
+<body class="antialiased selection:bg-emerald-500 selection:text-white flex flex-col min-h-screen">
 
-  <!-- Navbar Component[cite: 1] -->
-  <header id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 py-3 shadow-lg shadow-black/20">
-    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
-      
-      <!-- Brand Logo -->
-      <a href="#" class="flex items-center gap-2.5 group">
-        <div class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 font-bold shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-          <!-- Utensils Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-            <path d="M7 2v20"/>
-            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
-          </svg>
-        </div>
-        <span class="text-lg font-black tracking-tight text-white">
-          Nutri<span class="text-emerald-400">Meal</span>
-        </span>
-      </a>
-
-      <!-- Minimal Nav Links -->
-      <nav class="hidden md:flex items-center gap-8">
-        <a href="#features" class="text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer">
-          Features
-        </a>
-        <a href="#creators" class="text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer">
-          Creators
-        </a>
-        <a href="https://github.com/jasjeetthind/meal_plan_app" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
-          <!-- GitHub Icon -->
-          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-          </svg>
-          <span>GitHub</span>
-        </a>
-      </nav>
-
-      <!-- Play Store Badge Action Button -->
-      <div class="flex items-center gap-3">
-        <button onclick="openModal()" type="button" class="group inline-flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 transform active:scale-98 cursor-pointer select-none bg-black text-white border border-slate-800 hover:bg-slate-900 hover:border-slate-700 shadow-md scale-90">
-          <!-- Official Google Play Logo 4-color vector[cite: 1] -->
-          <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M68.8 12.8C62.4 19.5 58.7 30 58.7 43.8V468.2C58.7 482 62.4 492.5 68.8 499.2L71.2 501.5L327.3 260.6V251.4L71.2 10.5L68.8 12.8Z" fill="#00D2FF" />
-            <path d="M412.7 175.2L327.3 251.4V260.6L412.8 336.8L414.7 335.7L516.4 277.9C545.4 261.4 545.4 234.6 516.4 218.1L414.7 160.3L412.7 175.2Z" fill="#FFC700" />
-            <path d="M327.3 260.6L71.2 501.5C80.2 511.1 94.6 512.3 110.8 503.1L412.8 336.8L327.3 260.6Z" fill="#FF3A44" />
-            <path d="M327.3 251.4L412.8 175.2L110.8 3.9C94.6 -5.3 80.2 -4.1 71.2 5.5L327.3 251.4Z" fill="#00E676" />
-          </svg>
-          <div class="text-left flex flex-col justify-center leading-none">
-            <span class="text-[9px] font-semibold tracking-wider uppercase opacity-80">GET IT ON</span>
-            <span class="text-sm font-bold tracking-tight font-sans mt-0.5">Google Play</span>
-          </div>
-        </button>
-      </div>
-
-    </div>
-  </header>
-
-  <main>
-    <!-- Hero Section[cite: 1] -->
-    <section class="relative pt-32 pb-20 overflow-hidden bg-slate-950 text-white">
-      <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full pointer-events-none"></div>
-      
-      <div class="max-w-6xl mx-auto px-6 relative z-10 text-center space-y-8">
-        
-        <!-- Apple-style pill badge -->
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-emerald-400 shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
-            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-            <path d="M5 3v4"/>
-            <path d="M19 17v4"/>
-            <path d="M3 5h4"/>
-            <path d="M17 19h4"/>
-          </svg>
-          <span>Now Available on Google Play</span>
-        </div>
-        
-        <!-- Headline -->
-        <h1 class="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-white max-w-4xl mx-auto leading-[1.08]">
-          Nutrition, <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">simplified.</span>
-        </h1>
-        
-        <!-- Subheadline -->
-        <p class="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed">
-          AI-generated weekly meal plans built for Android.
-        </p>
-
-        <!-- Call to Actions -->
-        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button onclick="openModal()" type="button" class="group inline-flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 transform active:scale-98 cursor-pointer select-none bg-black text-white border border-slate-800 hover:bg-slate-900 hover:border-slate-700 shadow-md scale-105">
-            <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M68.8 12.8C62.4 19.5 58.7 30 58.7 43.8V468.2C58.7 482 62.4 492.5 68.8 499.2L71.2 501.5L327.3 260.6V251.4L71.2 10.5L68.8 12.8Z" fill="#00D2FF" />
-              <path d="M412.7 175.2L327.3 251.4V260.6L412.8 336.8L414.7 335.7L516.4 277.9C545.4 261.4 545.4 234.6 516.4 218.1L414.7 160.3L412.7 175.2Z" fill="#FFC700" />
-              <path d="M327.3 260.6L71.2 501.5C80.2 511.1 94.6 512.3 110.8 503.1L412.8 336.8L327.3 260.6Z" fill="#FF3A44" />
-              <path d="M327.3 251.4L412.8 175.2L110.8 3.9C94.6 -5.3 80.2 -4.1 71.2 5.5L327.3 251.4Z" fill="#00E676" />
-            </svg>
-            <div class="text-left flex flex-col justify-center leading-none">
-              <span class="text-[9px] font-semibold tracking-wider uppercase opacity-80">GET IT ON</span>
-              <span class="text-sm font-bold tracking-tight font-sans mt-0.5">Google Play</span>
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-900/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+                    </div>
+                    <span class="text-2xl font-black tracking-tight text-white">Nutri<span class="text-emerald-400">Meal</span></span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Features</a>
+                    <a href="#about" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">About</a>
+                    <a href="#team" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Team</a>
+                    <a href="#" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/30">Download Android App</a>
+                </div>
             </div>
-          </button>
-          
-          <a href="https://github.com/jasjeetthind/meal_plan_app" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white border border-slate-800 hover:border-slate-700 font-semibold text-sm transition-all shadow-md group scale-105">
-            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-            </svg>
-            <span>GitHub Repository</span>
-          </a>
         </div>
+    </nav>
 
-        <!-- Micro Security Proof -->
-        <div class="flex items-center justify-center gap-6 text-xs text-slate-500 font-medium pt-2">
-          <span class="flex items-center gap-1.5 text-slate-400">
-            <span>Open Source Project</span>
-          </span>
-          <span>&middot;</span>
-          <span class="flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-emerald-400">
-              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
-              <path d="m9 12 2 2 4-4"/>
-            </svg>
-            Google Play Protect
-          </span>
-        </div>
-
-        <!-- Apple-style Product Visual / Device Frame -->
-        <div class="pt-10 max-w-3xl mx-auto relative">
-          <div class="relative rounded-[40px] bg-slate-900 p-4 border border-slate-800 shadow-2xl shadow-emerald-950/30">
-            <div class="bg-slate-950 rounded-[32px] p-6 border border-slate-800/80 text-left space-y-6">
-              
-              <div class="flex items-center justify-between pb-4 border-b border-slate-900">
-                <div>
-                  <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Today's Meal Target</span>
-                  <h3 class="text-base font-extrabold text-white">Monday &bull; 2,100 kcal</h3>
-                </div>
-                <div class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
-                  92% Macro Match
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span class="text-[11px] text-slate-400 font-semibold block">Protein Target</span>
-                  <div class="text-lg font-black text-emerald-400">145g / 150g</div>
-                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                    <div class="bg-emerald-400 h-full w-[96%]"></div>
-                  </div>
-                </div>
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span class="text-[11px] text-slate-400 font-semibold block">Carbs Target</span>
-                  <div class="text-lg font-black text-teal-400">120g / 180g</div>
-                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                    <div class="bg-teal-400 h-full w-[66%]"></div>
-                  </div>
-                </div>
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-1">
-                  <span class="text-[11px] text-slate-400 font-semibold block">Calories Consumed</span>
-                  <div class="text-lg font-black text-amber-400">1,620 kcal</div>
-                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                    <div class="bg-amber-400 h-full w-[77%]"></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-4 bg-slate-900 p-3.5 rounded-2xl border border-slate-800">
-                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80" alt="Mediterranean Bowl" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
-                <div class="flex-1 min-w-0">
-                  <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Lunch &bull; 12:30 PM</span>
-                  <h4 class="font-bold text-sm text-white truncate">Mediterranean Salmon Quinoa Bowl</h4>
-                  <p class="text-xs text-slate-400 mt-0.5">560 kcal &bull; 42g Protein &bull; 15 mins prep</p>
-                </div>
-              </div>
-
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 lg:pt-48 lg:pb-32 relative overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-emerald-500/20 blur-[120px] rounded-full pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 mb-8">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-xs font-semibold text-slate-300 tracking-wide">NutriMeal 2.0 is Live on Android</span>
             </div>
-          </div>
+            <h1 class="text-5xl md:text-7xl font-black text-white tracking-tight leading-tight mb-6">
+                Your AI-Powered <br class="hidden md:block" />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">Personal Nutritionist</span>
+            </h1>
+            <p class="mt-4 text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Generate highly optimized, macro-perfect meal plans in seconds. Let NutriMeal handle the math while you focus on achieving your fitness goals.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#" class="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-2xl transition-all shadow-xl shadow-emerald-500/20 text-lg flex items-center justify-center gap-2">
+                    Get it on Google Play
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </a>
+            </div>
         </div>
-
-      </div>
     </section>
 
-    <!-- Features Section[cite: 1] -->
-    <section id="features" class="py-24 bg-slate-900 text-white">
-      <div class="max-w-6xl mx-auto px-6 space-y-16">
-        
-        <div class="text-center max-w-2xl mx-auto space-y-3">
-          <h2 class="text-3xl sm:text-4xl font-black tracking-tight">
-            Designed for <span class="text-emerald-400">effortless nutrition</span>.
-          </h2>
-          <p class="text-slate-400 text-base">
-            No tedious manual logging. Every tool is crafted to save you hours each week.
-          </p>
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-slate-950 relative border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Smart Features, Real Results</h2>
+                <p class="text-slate-400">Everything you need to hit your targets without the stress of manual calorie counting and recipe hunting.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 hover:border-emerald-500/50 transition-colors">
+                    <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 text-emerald-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Instant AI Generation</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Input your target macros, restrictions, and preferences. Our AI engine builds a perfect 7-day plan in under 5 seconds.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 hover:border-emerald-500/50 transition-colors">
+                    <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 text-emerald-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Automated Grocery Lists</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Your meal plan automatically converts into a categorized shopping list, sorting ingredients by supermarket aisle.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 hover:border-emerald-500/50 transition-colors">
+                    <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 text-emerald-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Barcode Scanning</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Quickly swap out meals or add snacks using our massive database via the Android app's built-in barcode scanner.</p>
+                </div>
+            </div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Card 1 -->
-          <div class="bg-slate-950 p-8 rounded-3xl border border-slate-800 space-y-4 hover:border-slate-700 transition-all">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-extrabold text-white">Custom Weekly Meal Plans</h3>
-            <p class="text-sm text-slate-400 leading-relaxed">
-              Tailored precisely to your caloric goals, protein needs, budget, and dietary preferences in seconds.
-            </p>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="bg-slate-950 p-8 rounded-3xl border border-slate-800 space-y-4 hover:border-slate-700 transition-all">
-            <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-bold">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-                <path d="M3 6h18"/>
-                <path d="M16 10a4 4 0 0 1-8 0"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-extrabold text-white">Smart Grocery Aisle List</h3>
-            <p class="text-sm text-slate-400 leading-relaxed">
-              Auto-tallies ingredients from your weekly plan into organized grocery aisle sections. Zero food waste.
-            </p>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="bg-slate-950 p-8 rounded-3xl border border-slate-800 space-y-4 hover:border-slate-700 transition-all">
-            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
-                <path d="M3 5v14"/>
-                <path d="M8 5v14"/>
-                <path d="M12 5v14"/>
-                <path d="M17 5v14"/>
-                <path d="M21 5v14"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-extrabold text-white">Camera Barcode Scanner</h3>
-            <p class="text-sm text-slate-400 leading-relaxed">
-              Instant nutrition lookups with access to over 2,000,000 verified foods in the global database.
-            </p>
-          </div>
-        </div>
-
-      </div>
     </section>
 
-    <!-- Interactive Simulator Placeholder / Extracted static snapshot for lines[cite: 1] -->
-    <section id="app-simulator" class="py-20 bg-slate-900 text-white relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[130px] rounded-full pointer-events-none"></div>
-      <div class="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/10 blur-[130px] rounded-full pointer-events-none"></div>
-      
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        <div class="text-center max-w-3xl mx-auto space-y-4 mb-12">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-800 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-            <span>Interactive Web Experience</span>
-          </div>
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
-            Try the <span class="text-emerald-400">NutriMeal App</span> Live
-          </h2>
-          <p class="text-slate-300 text-base sm:text-lg">
-            Experience our intuitive meal planner engine right in your browser. Switch days, explore chef recipes, and see automated aisle shopping lists.
-          </p>
+    <!-- Team Section -->
+    <section id="team" class="py-24 bg-[#020617] border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-16">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Meet the Makers</h2>
+                <p class="text-slate-400 max-w-2xl">Built by a passionate team of Android developers and fitness enthusiasts dedicated to making nutrition simple.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Jasjeet Bio -->
+                <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-6 relative overflow-hidden group">
+                  <div class="space-y-4 relative z-10">
+                    <div class="flex items-center gap-4">
+                      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-600 p-0.5 shadow-lg flex-shrink-0">
+                        <img src="jasjeet.jpg" alt="Jasjeet" class="w-full h-full object-cover rounded-[14px]">
+                      </div>
+                      <div>
+                        <h3 class="text-xl font-extrabold text-white group-hover:text-emerald-400 transition-colors">Jasjeet</h3>
+                        <p class="text-xs font-bold text-emerald-400 tracking-wide mt-0.5">Co-Creator &amp; Lead Developer</p>
+                      </div>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed font-normal">
+                      Co-creator and maintainer of NutriMeal repository. Driving the core Android architecture, AI meal plan algorithms, and open source community development.
+                    </p>
+                  </div>
+                  <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                    <span class="flex items-center gap-1.5 font-medium">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-emerald-400"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                      Co-Creator
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Another Team Member (Example to fill out design) -->
+                <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-6 relative overflow-hidden group">
+                    <div class="space-y-4 relative z-10">
+                      <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-600 p-0.5 shadow-lg flex-shrink-0">
+                            <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-xl font-black text-white">S</div>
+                        </div>
+                        <div>
+                          <h3 class="text-xl font-extrabold text-white group-hover:text-purple-400 transition-colors">Sarah</h3>
+                          <p class="text-xs font-bold text-purple-400 tracking-wide mt-0.5">UI/UX Designer</p>
+                        </div>
+                      </div>
+                      <p class="text-sm text-slate-300 leading-relaxed font-normal">
+                        Crafting the beautiful, intuitive interfaces of the NutriMeal Android application. Ensuring every interaction is smooth and visually engaging.
+                      </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                      <span class="flex items-center gap-1.5 font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-purple-400"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        Design Lead
+                      </span>
+                    </div>
+                </div>
+
+            </div>
         </div>
-
-        <div class="flex flex-wrap items-center justify-center gap-2 mb-8">
-          <span class="text-xs font-bold text-slate-400 mr-2 uppercase tracking-wider">Target Plan:</span>
-          <button class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 scale-105">Balanced (2,100 kcal)</button>
-          <button class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white">Weight Loss (1,600 kcal)</button>
-          <button class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white">Muscle Gain (2,700 kcal)</button>
-          <button class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white">Keto Low-Carb</button>
-          <button class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white">100% Plant-Based</button>
-        </div>
-
-        <!-- Main App Frame Container -->
-        <div class="bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden max-w-5xl mx-auto">
-          <div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/60 gap-4">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center font-black">N</div>
-              <div>
-                <h3 class="font-extrabold text-sm text-white">NutriMeal Studio</h3>
-                <p class="text-[11px] text-emerald-400">Active Mode: BALANCED</p>
-              </div>
-            </div>
-            <div class="flex items-center bg-slate-900 p-1 rounded-2xl border border-slate-800">
-              <button class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                <span>Weekly Plan</span>
-              </button>
-              <button class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                <span>Smart Grocery List</span>
-                <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded-full font-extrabold">12</span>
-              </button>
-              <button class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-slate-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" x2="18" y1="17" y2="17"/></svg>
-                <span>Recipe Detail</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- TAB 1: WEEKLY PLAN DISPLAY (Static snapshot) -->
-          <div class="p-6 space-y-6">
-            <div class="flex items-center justify-between gap-2 overflow-x-auto pb-2 scrollbar-none">
-              <button class="flex-1 min-w-[70px] py-3 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer border bg-emerald-500 text-slate-950 border-emerald-400 font-extrabold shadow-lg shadow-emerald-500/20">
-                <span class="text-[10px] uppercase tracking-wider">MON</span>
-                <span class="text-sm font-bold">15 Jul</span>
-              </button>
-              <button class="flex-1 min-w-[70px] py-3 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer border bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white">
-                <span class="text-[10px] uppercase tracking-wider">TUE</span>
-                <span class="text-sm font-bold">16 Jul</span>
-              </button>
-              <button class="flex-1 min-w-[70px] py-3 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer border bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white">
-                <span class="text-[10px] uppercase tracking-wider">WED</span>
-                <span class="text-sm font-bold">17 Jul</span>
-              </button>
-              <button class="flex-1 min-w-[70px] py-3 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer border bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white">
-                <span class="text-[10px] uppercase tracking-wider">THU</span>
-                <span class="text-sm font-bold">18 Jul</span>
-              </button>
-              <button class="flex-1 min-w-[70px] py-3 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer border bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white">
-                <span class="text-[10px] uppercase tracking-wider">FRI</span>
-                <span class="text-sm font-bold">19 Jul</span>
-              </button>
-              <button class="flex-1 min-w-[70px] py-3 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer border bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white">
-                <span class="text-[10px] uppercase tracking-wider">SAT</span>
-                <span class="text-sm font-bold">20 Jul</span>
-              </button>
-              <button class="flex-1 min-w-[70px] py-3 rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer border bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-white">
-                <span class="text-[10px] uppercase tracking-wider">SUN</span>
-                <span class="text-sm font-bold">21 Jul</span>
-              </button>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 grid grid-cols-2 md:grid-cols-5 gap-4 text-center items-center">
-              <div class="col-span-2 md:col-span-1 text-left border-r border-slate-800 pr-2">
-                <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Monday Totals</span>
-                <p class="text-xl font-black text-emerald-400">1860 <span class="text-xs font-normal text-slate-400">kcal</span></p>
-              </div>
-              <div>
-                <span class="text-[10px] uppercase text-slate-400 block font-bold">Protein</span>
-                <span class="text-sm font-extrabold text-white">132g</span>
-              </div>
-              <div>
-                <span class="text-[10px] uppercase text-slate-400 block font-bold">Carbs</span>
-                <span class="text-sm font-extrabold text-white">117g</span>
-              </div>
-              <div>
-                <span class="text-[10px] uppercase text-slate-400 block font-bold">Fats</span>
-                <span class="text-sm font-extrabold text-white">92g</span>
-              </div>
-              <div class="col-span-2 md:col-span-1">
-                <button onclick="openModal()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                  <span>Save to Android</span>
-                </button>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Meal 1 -->
-              <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 hover:border-slate-700 transition-all flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-900 uppercase tracking-wider">Breakfast</span>
-                      <span class="text-[11px] text-slate-400 font-semibold">8:00 AM</span>
-                    </div>
-                    <button class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-bold">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                      <span>AI Swap</span>
-                    </button>
-                  </div>
-                  <div class="flex gap-4 items-center">
-                    <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=200&q=80" alt="Avocado Toast" class="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-slate-800" />
-                    <div class="min-w-0">
-                      <h4 class="font-bold text-sm text-white truncate">Avocado &amp; Poached Egg Protein Toast</h4>
-                      <div class="flex items-center gap-2 text-xs text-slate-400 mt-1 font-semibold">
-                        <span class="text-emerald-400 font-bold">380 kcal</span>
-                        <span>&bull;</span>
-                        <span>P: 18g</span>
-                        <span>C: 32g</span>
-                      </div>
-                      <div class="flex items-center gap-1.5 mt-2">
-                        <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">High Protein</span>
-                        <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">Vegetarian</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span class="text-xs text-slate-400 font-medium">Prep: 10 mins</span>
-                  <button class="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer">
-                    <span>View Recipe</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m9 18 6-6-6-6"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Meal 2 -->
-              <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 hover:border-slate-700 transition-all flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-900 uppercase tracking-wider">Lunch</span>
-                      <span class="text-[11px] text-slate-400 font-semibold">1:00 PM</span>
-                    </div>
-                    <button class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-bold">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                      <span>AI Swap</span>
-                    </button>
-                  </div>
-                  <div class="flex gap-4 items-center">
-                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=200&q=80" alt="Mediterranean Salmon" class="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-slate-800" />
-                    <div class="min-w-0">
-                      <h4 class="font-bold text-sm text-white truncate">Mediterranean Salmon Quinoa Bowl</h4>
-                      <div class="flex items-center gap-2 text-xs text-slate-400 mt-1 font-semibold">
-                        <span class="text-emerald-400 font-bold">560 kcal</span>
-                        <span>&bull;</span>
-                        <span>P: 42g</span>
-                        <span>C: 45g</span>
-                      </div>
-                      <div class="flex items-center gap-1.5 mt-2">
-                        <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">Omega-3 Rich</span>
-                        <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">Gluten-Free</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span class="text-xs text-slate-400 font-medium">Prep: 15 mins</span>
-                  <button class="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer">
-                    <span>View Recipe</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m9 18 6-6-6-6"/></svg>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Additional padding to simulate the remaining meals -->
-              <!-- Meal 3 -->
-              <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 hover:border-slate-700 transition-all flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-900 uppercase tracking-wider">Dinner</span>
-                      <span class="text-[11px] text-slate-400 font-semibold">7:00 PM</span>
-                    </div>
-                    <button class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-bold">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                      <span>AI Swap</span>
-                    </button>
-                  </div>
-                  <div class="flex gap-4 items-center">
-                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=200&q=80" alt="Garlic Butter Ribeye" class="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-slate-800" />
-                    <div class="min-w-0">
-                      <h4 class="font-bold text-sm text-white truncate">Garlic Butter Herb Ribeye</h4>
-                      <div class="flex items-center gap-2 text-xs text-slate-400 mt-1 font-semibold">
-                        <span class="text-emerald-400 font-bold">680 kcal</span>
-                        <span>&bull;</span>
-                        <span>P: 52g</span>
-                        <span>C: 12g</span>
-                      </div>
-                      <div class="flex items-center gap-1.5 mt-2">
-                        <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">Keto Friendly</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span class="text-xs text-slate-400 font-medium">Prep: 10 mins</span>
-                  <button class="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer">
-                    <span>View Recipe</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m9 18 6-6-6-6"/></svg>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Meal 4 -->
-              <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4 hover:border-slate-700 transition-all flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-900 uppercase tracking-wider">Snack</span>
-                      <span class="text-[11px] text-slate-400 font-semibold">4:00 PM</span>
-                    </div>
-                    <button class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 transition-all cursor-pointer flex items-center gap-1 text-[10px] font-bold">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                      <span>AI Swap</span>
-                    </button>
-                  </div>
-                  <div class="flex gap-4 items-center">
-                    <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=200&q=80" alt="Yogurt Parfait" class="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-slate-800" />
-                    <div class="min-w-0">
-                      <h4 class="font-bold text-sm text-white truncate">Greek Yogurt Berry Parfait</h4>
-                      <div class="flex items-center gap-2 text-xs text-slate-400 mt-1 font-semibold">
-                        <span class="text-emerald-400 font-bold">240 kcal</span>
-                        <span>&bull;</span>
-                        <span>P: 20g</span>
-                        <span>C: 28g</span>
-                      </div>
-                      <div class="flex items-center gap-1.5 mt-2">
-                        <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">Probiotic</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                  <span class="text-xs text-slate-400 font-medium">Prep: 5 mins</span>
-                  <button class="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer">
-                    <span>View Recipe</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="m9 18 6-6-6-6"/></svg>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="px-6 py-4 bg-slate-900 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <button onclick="openModal()" type="button" class="group inline-flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 transform active:scale-98 cursor-pointer select-none bg-black text-white border border-slate-800 hover:bg-slate-900 hover:border-slate-700 shadow-md">
-                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M68.8 12.8C62.4 19.5 58.7 30 58.7 43.8V468.2C58.7 482 62.4 492.5 68.8 499.2L71.2 501.5L327.3 260.6V251.4L71.2 10.5L68.8 12.8Z" fill="#00D2FF" />
-                  <path d="M412.7 175.2L327.3 251.4V260.6L412.8 336.8L414.7 335.7L516.4 277.9C545.4 261.4 545.4 234.6 516.4 218.1L414.7 160.3L412.7 175.2Z" fill="#FFC700" />
-                  <path d="M327.3 260.6L71.2 501.5C80.2 511.1 94.6 512.3 110.8 503.1L412.8 336.8L327.3 260.6Z" fill="#FF3A44" />
-                  <path d="M327.3 251.4L412.8 175.2L110.8 3.9C94.6 -5.3 80.2 -4.1 71.2 5.5L327.3 251.4Z" fill="#00E676" />
-                </svg>
-              </button>
-              <p class="text-xs text-slate-400">Love this preview? Download the full Android app to scan barcodes &amp; track water intake.</p>
-            </div>
-            <button onclick="openModal()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-md shadow-emerald-600/20 whitespace-nowrap">
-              Get NutriMeal on Google Play
-            </button>
-          </div>
-
-        </div>
-      </div>
     </section>
 
-    <!-- Creators Section[cite: 1] -->
-    <section id="creators" class="py-24 bg-slate-950 text-white border-t border-slate-900">
-      <div class="max-w-6xl mx-auto px-6 space-y-12">
-        
-        <div class="text-center max-w-2xl mx-auto space-y-3">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-emerald-400">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5">
-              <polyline points="16 18 22 12 16 6"/>
-              <polyline points="8 6 2 12 8 18"/>
-            </svg>
-            <span>Meet the Creators</span>
-          </div>
-          <h2 class="text-3xl sm:text-4xl font-black tracking-tight">
-            Built by <span class="text-emerald-400">Jaap &amp; Jasjeet</span>
-          </h2>
-          <p class="text-slate-400 text-sm sm:text-base">
-            NutriMeal is an open-source Android application designed to simplify daily meal decisions and healthy eating.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <!-- Jaap Bio -->
-          <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-6 relative overflow-hidden group">
-            <div class="space-y-4 relative z-10">
-              <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 p-0.5 shadow-lg flex-shrink-0">
-                  <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-xl font-black text-white">J</div>
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-800 bg-slate-950 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+                    </div>
+                    <span class="text-xl font-black tracking-tight text-white">Nutri<span class="text-emerald-400">Meal</span></span>
                 </div>
-                <div>
-                  <h3 class="text-xl font-extrabold text-white group-hover:text-emerald-400 transition-colors">Jaap</h3>
-                  <p class="text-xs font-bold text-emerald-400 tracking-wide mt-0.5">Co-Creator &amp; Developer</p>
+                <div class="text-sm text-slate-500 font-medium">
+                    &copy; 2026 NutriMeal Studio. All rights reserved.
                 </div>
-              </div>
-              <p class="text-sm text-slate-300 leading-relaxed font-normal">
-                Co-creator of NutriMeal. Passionate about health tech, intuitive UX, and bringing intelligent meal planning solutions to everyday mobile users.
-              </p>
             </div>
-            <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span class="flex items-center gap-1.5 font-medium">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-emerald-400"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-                Co-Creator
-              </span>
-            </div>
-          </div>
-
-          <!-- Jasjeet Bio -->
-          <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-6 relative overflow-hidden group">
-            <div class="space-y-4 relative z-10">
-              <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-600 p-0.5 shadow-lg flex-shrink-0">
-              <img src="jasjeet.jpg" alt="Jasjeet" class="w-full h-full object-cover rounded-[14px]">
-                </div>
-                <div>
-                  <h3 class="text-xl font-extrabold text-white group-hover:text-emerald-400 transition-colors">Jasjeet</h3>
-                  <p class="text-xs font-bold text-emerald-400 tracking-wide mt-0.5">Co-Creator &amp; Lead Developer</p>
-                </div>
-              </div>
-              <p class="text-sm text-slate-300 leading-relaxed font-normal">
-                Co-creator and maintainer of NutriMeal repository. Driving the core Android architecture, AI meal plan algorithms, and open source community development.
-              </p>
-            </div>
-            <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span class="flex items-center gap-1.5 font-medium">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-emerald-400"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-                Co-Creator
-              </span>
-              <a href="https://github.com/jasjeetthind/meal_plan_app" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-bold inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                <span>View Repository</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
-              </a>
-            </div>
-          </div>
         </div>
+    </footer>
 
-        <!-- GitHub Repository CTA Banner -->
-        <div class="max-w-4xl mx-auto bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 p-8 rounded-3xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div class="space-y-1 text-center sm:text-left">
-            <h4 class="text-lg font-black text-white flex items-center justify-center sm:justify-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-emerald-400"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-              Explore the Code on GitHub
-            </h4>
-            <p class="text-xs text-slate-400">
-              Check out the Android source code, contribute, or star the project on GitHub.
-            </p>
-          </div>
-          <a href="https://github.com/jasjeetthind/meal_plan_app" target="_blank" rel="noopener noreferrer" class="px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-lg shadow-emerald-500/20 inline-flex items-center gap-2 flex-shrink-0 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-            <span>github.com/jasjeetthind/meal_plan_app</span>
-          </a>
-        </div>
-
-      </div>
-    </section>
-  </main>
-
-  <!-- Footer Component[cite: 1] -->
-  <footer class="bg-slate-950 text-slate-500 py-12 border-t border-slate-900">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-      
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/>
-            <path d="M7 2v20"/>
-            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
-          </svg>
-        </div>
-        <span class="text-base font-black text-white tracking-tight">
-          Nutri<span class="text-emerald-400">Meal</span>
-        </span>
-      </div>
-
-      <p class="text-xs text-slate-500 text-center">
-        &copy; 2026 NutriMeal App. Google Play and the Google Play logo are trademarks of Google LLC.
-      </p>
-
-      <button onclick="openModal()" type="button" class="group inline-flex items-center gap-3 px-5 py-2.5 rounded-xl transition-all duration-200 transform active:scale-98 cursor-pointer select-none bg-black text-white border border-slate-800 hover:bg-slate-900 hover:border-slate-700 shadow-md scale-90">
-        <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M68.8 12.8C62.4 19.5 58.7 30 58.7 43.8V468.2C58.7 482 62.4 492.5 68.8 499.2L71.2 501.5L327.3 260.6V251.4L71.2 10.5L68.8 12.8Z" fill="#00D2FF" />
-          <path d="M412.7 175.2L327.3 251.4V260.6L412.8 336.8L414.7 335.7L516.4 277.9C545.4 261.4 545.4 234.6 516.4 218.1L414.7 160.3L412.7 175.2Z" fill="#FFC700" />
-          <path d="M327.3 260.6L71.2 501.5C80.2 511.1 94.6 512.3 110.8 503.1L412.8 336.8L327.3 260.6Z" fill="#FF3A44" />
-          <path d="M327.3 251.4L412.8 175.2L110.8 3.9C94.6 -5.3 80.2 -4.1 71.2 5.5L327.3 251.4Z" fill="#00E676" />
-        </svg>
-        <div class="text-left flex flex-col justify-center leading-none">
-          <span class="text-[9px] font-semibold tracking-wider uppercase opacity-80">GET IT ON</span>
-          <span class="text-sm font-bold tracking-tight font-sans mt-0.5">Google Play</span>
-        </div>
-      </button>
-
-    </div>
-  </footer>
-
-  <!-- Play Store Modal Component[cite: 1] -->
-  <div id="play-store-modal" class="fixed inset-0 z-50 items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-fade-in hidden">
-    <div class="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 text-white shadow-2xl space-y-6">
-      
-      <button onclick="closeModal()" class="absolute top-5 right-5 p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-
-      <div class="flex items-start gap-4 pr-6">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg flex-shrink-0">
-          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-emerald-400 text-2xl font-black">N</div>
-        </div>
-        <div class="space-y-1">
-          <h3 class="text-xl font-black text-white leading-tight">NutriMeal: Smart Meal Planner</h3>
-          <p class="text-xs text-emerald-400 font-bold">Jaap &amp; Jasjeet &bull; Food &amp; Drink</p>
-          <div class="flex items-center gap-3 text-xs text-slate-400 pt-0.5">
-            <span>Android Application</span>
-            <span>&bull;</span>
-            <span>18 MB</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs text-slate-300">
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-emerald-400 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>AI Macro &amp; Calorie Customizer</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-emerald-400 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Weekly Automated Meal Planning</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-emerald-400 flex-shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Open Source Android Application</span>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <button id="download-btn" onclick="simulateDownload()" class="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" id="download-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-          <span id="download-text">Install NutriMeal (Free)</span>
-        </button>
-        <div id="download-success" class="hidden p-4 rounded-2xl bg-emerald-950/60 border border-emerald-800 text-center space-y-2">
-          <p class="text-emerald-400 font-extrabold text-sm flex items-center justify-center gap-1.5">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-            App Successfully Installed!
-          </p>
-          <p class="text-xs text-slate-300">
-            NutriMeal is ready on your Android home screen. Enjoy effortless healthy meals!
-          </p>
-        </div>
-
-        <div class="flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5 text-emerald-400"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
-          <span>Verified safe by Google Play Protect</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Vanilla JS execution layer derived from App structure[cite: 1] -->
-  <script>
-    // Modal Functions
-    const modal = document.getElementById('play-store-modal');
-    const downloadBtn = document.getElementById('download-btn');
-    const downloadIcon = document.getElementById('download-icon');
-    const downloadText = document.getElementById('download-text');
-    const downloadSuccess = document.getElementById('download-success');
-
-    function openModal() {
-      modal.classList.remove('hidden');
-      modal.classList.add('active');
-      document.body.classList.add('modal-open');
-    }
-
-    function closeModal() {
-      modal.classList.add('hidden');
-      modal.classList.remove('active');
-      document.body.classList.remove('modal-open');
-      // reset state
-      downloadBtn.style.display = 'flex';
-      downloadBtn.disabled = false;
-      downloadSuccess.classList.add('hidden');
-      downloadText.innerText = 'Install NutriMeal (Free)';
-      downloadIcon.style.display = 'block';
-    }
-
-    function simulateDownload() {
-      downloadBtn.disabled = true;
-      downloadText.innerText = 'Installing from Google Play...';
-      downloadIcon.style.display = 'none';
-      
-      // Simulate download time
-      setTimeout(() => {
-        downloadBtn.style.display = 'none';
-        downloadSuccess.classList.remove('hidden');
-      }, 1800);
-    }
-
-    // Navbar Scroll Background Change
-    window.addEventListener('scroll', () => {
-      const nav = document.getElementById('main-nav');
-      if (window.scrollY > 20) {
-        nav.classList.add('bg-slate-950/80', 'backdrop-blur-xl', 'border-b', 'border-slate-800/80', 'shadow-lg');
-        nav.classList.remove('bg-transparent');
-      } else {
-        nav.classList.remove('bg-slate-950/80', 'backdrop-blur-xl', 'border-b', 'border-slate-800/80', 'shadow-lg');
-        nav.classList.add('bg-transparent');
-      }
-    });
-
-    // Recipes & Data Expansion[cite: 1]
-    const RECIPES = [
-      {
-        id: 'r1',
-        title: 'Avocado & Poached Egg Protein Toast',
-        category: 'breakfast',
-        calories: 380,
-        protein: 18,
-        carbs: 32,
-        fat: 20,
-      },
-      {
-        id: 'r2',
-        title: 'Mediterranean Salmon Quinoa Bowl',
-        category: 'lunch',
-        calories: 560,
-        protein: 42,
-        carbs: 45,
-        fat: 22,
-      },
-      {
-        id: 'r3',
-        title: 'Garlic Butter Herb Ribeye & Roasted Asparagus',
-        category: 'dinner',
-        calories: 680,
-        protein: 52,
-        carbs: 12,
-        fat: 46,
-      },
-      {
-        id: 'r4',
-        title: 'Greek Yogurt Berry Parfait & Honey',
-        category: 'snack',
-        calories: 240,
-        protein: 20,
-        carbs: 28,
-        fat: 4,
-      },
-      {
-        id: 'r5',
-        title: 'Spiced Chickpea & Sweet Potato Buddhabowl',
-        category: 'lunch',
-        calories: 490,
-        protein: 16,
-        carbs: 68,
-        fat: 14,
-      },
-      {
-        id: 'r6',
-        title: 'Teriyaki Glazed Chicken Meal Prep Box',
-        category: 'dinner',
-        calories: 590,
-        protein: 48,
-        carbs: 58,
-        fat: 16,
-      }
-    ];
-
-    const MOCK_SHOPPING_ITEMS = [
-      { id: 's1', name: 'Avocados', category: 'Produce', amount: '4 units', checked: false },
-      { id: 's2', name: 'Organic Spinach & Kale', category: 'Produce', amount: '2 bags', checked: true },
-      { id: 's3', name: 'Fresh Blueberries', category: 'Produce', amount: '250g', checked: false },
-      { id: 's4', name: 'Fresh Asparagus', category: 'Produce', amount: '1 bunch', checked: false },
-      { id: 's5', name: 'Plain Greek Yogurt 0%', category: 'Dairy & Eggs', amount: '1 kg', checked: true },
-      { id: 's6', name: 'Organic Free-Range Eggs', category: 'Dairy & Eggs', amount: '12 pack', checked: false },
-      { id: 's7', name: 'Feta Cheese', category: 'Dairy & Eggs', amount: '200g', checked: false },
-      { id: 's8', name: 'Wild Atlantic Salmon Fillets', category: 'Meat & Seafood', amount: '400g', checked: false },
-      { id: 's9', name: 'Grass-Fed Ribeye Steak', category: 'Meat & Seafood', amount: '450g', checked: false },
-      { id: 's10', name: 'Skinless Chicken Breast', category: 'Meat & Seafood', amount: '800g', checked: true },
-      { id: 's11', name: 'Tri-color Quinoa', category: 'Pantry & Grains', amount: '500g bag', checked: false },
-      { id: 's12', name: 'Jasmine Brown Rice', category: 'Pantry & Grains', amount: '1 kg', checked: true },
-      { id: 's13', name: 'Artisan Almond Granola', category: 'Pantry & Grains', amount: '350g', checked: false },
-      { id: 's14', name: 'Extra Virgin Olive Oil', category: 'Spices', amount: '1 bottle', checked: true },
-      { id: 's15', name: 'Chili Flakes & Hemp Seeds', category: 'Spices', amount: '1 jar', checked: false }
-    ];
-  </script>
 </body>
 </html>
